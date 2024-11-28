@@ -4,8 +4,8 @@ extern getch
 
 section .data
     tb1 db "Nhap n: ",0
-    true db "%d la so nguyen to",0
-    false db "%d khong phai la so nguyen to",0
+    true db "%d la so doi xung",0
+    false db "%d khong phai la so doi xung",0
     fmt db "%d",0
 
 section .bss
@@ -24,55 +24,56 @@ main:
     push fmt
     call scanf
     add esp,8
-    ; goi ham _CheckPrime
+    ; goi ham _CheckPalindromic
     push dword[n]
-    call _CheckPrime
+    call _CheckPalindromic
     ;pause
     call getch
     xor eax, eax
     ret
 
-global _CheckPrime
-_CheckPrime:
+global _CheckPalindromic
+_CheckPalindromic:
     push ebp
     mov ebp, esp
     push esi
-    
-    ; if n < 2
-    cmp dword[ebp + 8], 2
-    jl _CheckPrime.NotPrime
-    
-    ;  if n == 2
-    je _CheckPrime.Prime
-    
-    mov ecx, 2          ; i= 2
-_CheckPrime.Loop:
-    mov eax, [ebp + 8]  ; eax =  n
-    xor edx, edx        ; edx= 0
-    div ecx             ; eax = n/i, edx = n%i
-    test edx, edx       ; check edx
-    jz _CheckPrime.NotPrime ; if edx ==0
-    inc ecx             ; i++
-    mov eax, ecx        ; eax = i
-    mul ecx             ; eax = i*i
-    cmp eax, [ebp + 8]  ; eax <= n ?
-    jbe _CheckPrime.Loop ; true =>  loop
-    jmp _CheckPrime.Prime ; false => prime
+    mov esi,0
 
-_CheckPrime.Prime:
+    mov ecx, 1          ; i= 1
+    mov eax, [ebp + 8]  ; eax =  n
+_CheckPalindromic.Loop:
+    cmp eax,0
+    je _CheckPalindromic.Try
+    mov edx, 0
+
+    mov ecx,10
+    div ecx
+
+    mov ecx , esi
+    imul ecx,10
+    add ecx,edx
+    mov esi,ecx
+
+    jmp _CheckPalindromic.Loop
+_CheckPalindromic.Try:
+    cmp esi, [ebp + 8]  ; eax == n ?
+    je _CheckPalindromic.Palindromic ; true => Palindromic
+    jmp _CheckPalindromic.NotPalindromic ; false => not Palindromic
+
+_CheckPalindromic.Palindromic:
     push dword[ebp + 8] ; push n
     push true           ; push true
     call printf         ; in thong bao
     add esp, 8          ; xoa 2 phan tu khoi stack
-    jmp _CheckPrime.End
+    jmp _CheckPalindromic.End
 
-_CheckPrime.NotPrime:
+_CheckPalindromic.NotPalindromic:
     push dword[ebp + 8] ; push n
     push false           ; push false
     call printf           ; in thong bao
     add esp, 8
 
-_CheckPrime.End:
+_CheckPalindromic.End:
     pop esi        ; tra gia tri esi
     mov esp, ebp   ; khoi phuc stack
     pop ebp        ; khoi phuc ebp

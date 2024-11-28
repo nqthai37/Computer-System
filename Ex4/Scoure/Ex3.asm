@@ -4,8 +4,8 @@ extern getch
 
 section .data
     tb1 db "Nhap n: ",0
-    true db "%d la so nguyen to",0
-    false db "%d khong phai la so nguyen to",0
+    true db "%d la so chinh phuong",0
+    false db "%d khong phai la so chinh phuong",0
     fmt db "%d",0
 
 section .bss
@@ -24,55 +24,49 @@ main:
     push fmt
     call scanf
     add esp,8
-    ; goi ham _CheckPrime
+    ; goi ham _CheckSquare
     push dword[n]
-    call _CheckPrime
+    call _CheckSquare
     ;pause
     call getch
     xor eax, eax
     ret
 
-global _CheckPrime
-_CheckPrime:
+global _CheckSquare
+_CheckSquare:
     push ebp
     mov ebp, esp
     push esi
     
-    ; if n < 2
-    cmp dword[ebp + 8], 2
-    jl _CheckPrime.NotPrime
-    
-    ;  if n == 2
-    je _CheckPrime.Prime
-    
-    mov ecx, 2          ; i= 2
-_CheckPrime.Loop:
-    mov eax, [ebp + 8]  ; eax =  n
-    xor edx, edx        ; edx= 0
-    div ecx             ; eax = n/i, edx = n%i
-    test edx, edx       ; check edx
-    jz _CheckPrime.NotPrime ; if edx ==0
-    inc ecx             ; i++
-    mov eax, ecx        ; eax = i
-    mul ecx             ; eax = i*i
-    cmp eax, [ebp + 8]  ; eax <= n ?
-    jbe _CheckPrime.Loop ; true =>  loop
-    jmp _CheckPrime.Prime ; false => prime
 
-_CheckPrime.Prime:
+    mov ecx, 1          ; i= 1
+_CheckSquare.Loop:
+    mov eax, ecx        ; eax = i
+    mul ecx            ; eax = i*i
+    cmp eax, [ebp + 8]  ; eax >= n ?
+    jge _CheckSquare.Try ; true =>  try
+
+    inc ecx
+    jmp _CheckSquare.Loop
+_CheckSquare.Try:
+    cmp eax, [ebp + 8]  ; eax == n ?
+    je _CheckSquare.Square ; true => Square
+    jmp _CheckSquare.NotSquare ; false => not Square
+
+_CheckSquare.Square:
     push dword[ebp + 8] ; push n
     push true           ; push true
     call printf         ; in thong bao
     add esp, 8          ; xoa 2 phan tu khoi stack
-    jmp _CheckPrime.End
+    jmp _CheckSquare.End
 
-_CheckPrime.NotPrime:
+_CheckSquare.NotSquare:
     push dword[ebp + 8] ; push n
     push false           ; push false
     call printf           ; in thong bao
     add esp, 8
 
-_CheckPrime.End:
+_CheckSquare.End:
     pop esi        ; tra gia tri esi
     mov esp, ebp   ; khoi phuc stack
     pop ebp        ; khoi phuc ebp

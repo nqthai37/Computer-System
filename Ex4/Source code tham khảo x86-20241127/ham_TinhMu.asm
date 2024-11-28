@@ -60,6 +60,7 @@ main:
 ;dau thu tuc
 global _TinhMu
 _TinhMu:
+    
     push ebp ; backup ebp
     mov ebp, esp
     ;backup thanh ghi

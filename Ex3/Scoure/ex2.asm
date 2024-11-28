@@ -31,7 +31,8 @@ main:
 	mov x21,#1 // i = 1
     mov x20,#0  // sum = 0
 Loop:
-    cmp x21, x19
+
+    cmp x21, x19 // i >= n
     b.ge CheckPerfect
 
     // chia lay du
